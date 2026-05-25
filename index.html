@@ -60,6 +60,7 @@
     img {
       display: block;
       max-width: 100%;
+      height: auto;
     }
 
     a {
@@ -100,6 +101,60 @@
       align-items: center;
       justify-content: space-between;
       gap: 18px;
+    }
+
+    .menu-toggle {
+      display: none;
+      width: 46px;
+      height: 46px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid rgba(245, 240, 235, 0.46);
+      border-radius: 50%;
+      color: var(--white);
+      background: rgba(30, 30, 30, 0.22);
+      box-shadow: 0 10px 28px rgba(30, 30, 30, 0.12);
+      backdrop-filter: blur(14px);
+      cursor: pointer;
+      transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+    }
+
+    .menu-toggle svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      transition: transform 180ms ease;
+    }
+
+    .menu-toggle .close-line {
+      opacity: 0;
+      transform-origin: center;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .site-header.is-scrolled .menu-toggle,
+    .site-header.is-menu-open .menu-toggle {
+      color: var(--charcoal);
+      border-color: rgba(169, 111, 111, 0.22);
+      background: rgba(255, 250, 245, 0.78);
+    }
+
+    .site-header.is-menu-open .menu-toggle .menu-line {
+      opacity: 0;
+    }
+
+    .site-header.is-menu-open .menu-toggle .close-line {
+      opacity: 1;
+    }
+
+    .site-header.is-menu-open .menu-toggle .close-line-one {
+      transform: rotate(45deg);
+    }
+
+    .site-header.is-menu-open .menu-toggle .close-line-two {
+      transform: rotate(-45deg);
     }
 
     .brand {
@@ -177,9 +232,25 @@
       color: var(--white);
       isolation: isolate;
       overflow: hidden;
-      background:
-        linear-gradient(180deg, rgba(30, 30, 30, 0.05) 0%, rgba(30, 30, 30, 0.18) 44%, rgba(30, 30, 30, 0.78) 100%),
-        url("assets/images/gallery2.webp") center / cover no-repeat;
+      background: var(--charcoal);
+    }
+
+    .hero-video {
+      position: absolute;
+      inset: 0;
+      z-index: -3;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background: linear-gradient(180deg, rgba(30, 30, 30, 0.12) 0%, rgba(30, 30, 30, 0.28) 44%, rgba(30, 30, 30, 0.82) 100%);
     }
 
     .hero::after {
@@ -834,32 +905,57 @@
       }
 
       .nav {
-        align-items: flex-start;
+        position: relative;
+        align-items: center;
       }
 
       .brand span {
         display: none;
       }
 
-      .nav-links {
-        max-width: calc(100vw - 96px);
-        overflow-x: auto;
-        justify-content: flex-start;
-        scrollbar-width: none;
+      .menu-toggle {
+        display: grid;
       }
 
-      .nav-links::-webkit-scrollbar {
-        display: none;
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 12px);
+        right: 0;
+        width: min(260px, calc(100vw - 28px));
+        display: grid;
+        gap: 4px;
+        padding: 10px;
+        border: 1px solid rgba(169, 111, 111, 0.18);
+        border-radius: 14px;
+        background: rgba(255, 250, 245, 0.94);
+        box-shadow: 0 18px 48px rgba(30, 30, 30, 0.16);
+        backdrop-filter: blur(18px);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-8px);
+        transition: opacity 180ms ease, visibility 180ms ease, transform 180ms ease;
       }
 
       .nav-links a {
-        padding: 9px 11px;
-        font-size: 0.7rem;
+        width: 100%;
+        color: var(--charcoal);
+        padding: 12px 14px;
+        font-size: 0.78rem;
+        text-shadow: none;
+      }
+
+      .site-header.is-menu-open .nav-links {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
       }
 
       .hero {
         min-height: 100svh;
-        background-position: center;
+      }
+
+      .hero-video {
+        object-position: center center;
       }
 
       .about-grid,
@@ -914,6 +1010,10 @@
         min-height: 360px;
       }
 
+      .hero-logo {
+        margin-bottom: 20px;
+      }
+
       .photo-grid {
         grid-template-columns: 1fr;
         grid-template-rows: none;
@@ -922,7 +1022,14 @@
       .photo-card,
       .photo-card.tall {
         grid-row: auto;
-        min-height: 280px;
+        min-height: 0;
+        aspect-ratio: 4 / 3;
+      }
+
+      .about-image,
+      .map-wrap,
+      .map-wrap iframe {
+        min-height: 320px;
       }
 
       .menu-grid,
@@ -950,10 +1057,19 @@
     <div class="scroll-progress" data-progress aria-hidden="true"></div>
     <nav class="nav" aria-label="Primary navigation">
       <a class="brand" href="#top" aria-label="INYA Cafe home">
-        <img src="assets/images/logo.jpeg" alt="INYA Cafe logo">
+        <img src="assets/images/logo.png" alt="INYA Cafe logo">
         <span>INYA Cafe</span>
       </a>
-      <div class="nav-links">
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="primary-menu" data-menu-toggle>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path class="menu-line" d="M5 7h14"></path>
+          <path class="menu-line" d="M5 12h14"></path>
+          <path class="menu-line" d="M5 17h14"></path>
+          <path class="close-line close-line-one" d="M7 12h10"></path>
+          <path class="close-line close-line-two" d="M7 12h10"></path>
+        </svg>
+      </button>
+      <div class="nav-links" id="primary-menu">
         <a href="#about">Vibe</a>
         <a href="#space">Space</a>
         <a href="#menu">Menu</a>
@@ -964,8 +1080,11 @@
 
   <main id="top">
     <section class="hero" aria-label="INYA Cafe">
+      <video class="hero-video" autoplay muted loop playsinline poster="assets/images/gallery2.webp" aria-hidden="true">
+        <source src="assets/images/bgvid.mp4" type="video/mp4">
+      </video>
       <div class="hero-content reveal">
-        <img class="hero-logo" src="assets/images/logo.jpeg" alt="INYA Cafe logo">
+        <img class="hero-logo" src="assets/images/logo.png" alt="INYA Cafe logo">
         <p class="eyebrow">Boutique neighbourhood cafe</p>
         <h1>A quiet corner in JP Nagar</h1>
         <p class="hero-copy">Coffee · Food · Board Games · Good Vibes — JP Nagar, Bengaluru</p>
@@ -1137,7 +1256,7 @@
 
   <footer class="footer">
     <div class="footer-inner">
-      <img class="footer-logo" src="assets/images/logo.jpeg" alt="INYA Cafe logo" loading="lazy">
+      <img class="footer-logo" src="assets/images/logo.jpg" alt="INYA Cafe logo" loading="lazy">
       <p class="tagline">INYA Cafe · JP Nagar, Bengaluru</p>
       <a class="instagram" href="https://www.instagram.com/inya_cafe/" target="_blank" rel="noopener" aria-label="INYA Cafe on Instagram">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -1153,9 +1272,16 @@
   <script>
     const header = document.querySelector("[data-header]");
     const progress = document.querySelector("[data-progress]");
+    const menuToggle = document.querySelector("[data-menu-toggle]");
     const revealItems = document.querySelectorAll(".reveal");
     const navLinks = document.querySelectorAll(".nav-links a");
     const navSections = [...navLinks].map((link) => document.querySelector(link.getAttribute("href"))).filter(Boolean);
+
+    function setMenuOpen(isOpen) {
+      header.classList.toggle("is-menu-open", isOpen);
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+      menuToggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+    }
 
     function updateHeader() {
       header.classList.toggle("is-scrolled", window.scrollY > 24);
@@ -1174,6 +1300,26 @@
 
     updateHeader();
     window.addEventListener("scroll", updateHeader, { passive: true });
+
+    menuToggle.addEventListener("click", () => {
+      setMenuOpen(!header.classList.contains("is-menu-open"));
+    });
+
+    navLinks.forEach((link) => {
+      link.addEventListener("click", () => setMenuOpen(false));
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 860) {
+        setMenuOpen(false);
+      }
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    });
 
     if ("IntersectionObserver" in window) {
       const observer = new IntersectionObserver((entries) => {
